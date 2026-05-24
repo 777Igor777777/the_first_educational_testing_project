@@ -1,10 +1,11 @@
 import pytest
+from _pytest.fixtures import FixtureRequest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
         "--browser_name",
         action="store",
@@ -21,9 +22,9 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="function")
-def browser(request):
-    browser_name = request.config.getoption("browser_name")
-    user_language = request.config.getoption("language")
+def browser(request: FixtureRequest):
+    browser_name: str = request.config.getoption("browser_name") or "chrome"
+    user_language: str = request.config.getoption("language") or "en"
     print(f"\nstart {browser_name} browser test..")
 
     if browser_name == "chrome":
@@ -35,7 +36,7 @@ def browser(request):
 
     elif browser_name == "firefox":
         options = FirefoxOptions()
-        options.set_preference("intl.accept_languages", user_language)
+        options.set_preference("intl.accept_languages", "user_language")
         browser = webdriver.Firefox(options=options)
 
     else:
