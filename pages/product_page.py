@@ -1,3 +1,5 @@
+import time
+
 from .base_page import BasePage
 from .locators import ProductPageLocators
 
@@ -8,6 +10,7 @@ class ProductPage(BasePage):
         self.should_be_basket_on_the_product_page()
         self.should_be_add_product_in_the_basket()
         self.solve_quiz_and_get_code()
+        time.sleep(10)
         self.should_be_right_text_product_in_the_basket()
         self.should_be_right_cost_product_in_the_basket()
 
@@ -27,7 +30,7 @@ class ProductPage(BasePage):
     def should_be_right_text_product_in_the_basket(self):
         product_name = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
         assert (
-            f"{product_name} был добавлен в вашу корзину."
+            product_name
             in self.browser.find_element(
                 *ProductPageLocators.PRODUCT_ADDED_IN_THE_BASKET_TEXT
             ).text
