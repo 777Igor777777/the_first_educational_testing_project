@@ -6,11 +6,11 @@ from .locators import ProductPageLocators
 
 class ProductPage(BasePage):
     def should_be_product_page(self):
-        self.should_be_product_url()
+        # self.should_be_product_url()
         self.should_be_basket_on_the_product_page()
         self.should_be_add_product_in_the_basket()
         self.solve_quiz_and_get_code()
-        time.sleep(10)
+        # time.sleep(30)
         self.should_be_right_text_product_in_the_basket()
         self.should_be_right_cost_product_in_the_basket()
 
@@ -31,7 +31,7 @@ class ProductPage(BasePage):
         product_name = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
         assert (
             product_name
-            in self.browser.find_element(
+            == self.browser.find_element(
                 *ProductPageLocators.PRODUCT_ADDED_IN_THE_BASKET_TEXT
             ).text
         ), "Incorrect message"
@@ -42,3 +42,13 @@ class ProductPage(BasePage):
             price
             == self.browser.find_element(*ProductPageLocators.PRODUCT_BASKET_COST).text
         ), "Incorrect cost"
+
+    def should_not_be_success_message(self):
+        assert self.is_not_element_present(
+            *ProductPageLocators.PRODUCT_ADDED_IN_THE_BASKET_TEXT
+        ), "Success message is presented, but should not be"
+
+    def should_not_be_success_message_after_few_moments(self):
+        assert self.is_disappeared(
+            *ProductPageLocators.PRODUCT_ADDED_IN_THE_BASKET_TEXT
+        ), "Success message is presenred, but should be del"

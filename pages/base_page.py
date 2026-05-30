@@ -1,7 +1,15 @@
 from math import log, sin
 
-from selenium.common.exceptions import NoAlertPresentException, NoSuchElementException
+from selenium.common.exceptions import (
+    NoAlertPresentException,
+    NoSuchElementException,
+    TimeoutException,
+)
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from .locators import BasePageLocators
 
 
 class BasePage:
@@ -20,6 +28,26 @@ class BasePage:
             return False
         return True
 
+    def is_not_element_present(self, how: str, what: str, timeout: int = 4) -> bool:
+        try:
+            WebDriverWait(self.browser, timeout).until(
+                EC.presence_of_element_located((how, what))
+            )
+        except TimeoutException:
+            return True
+
+        return False
+
+    def is_disappeared(self, how: str, what: str, timeout: int = 10) -> bool:
+        try:
+            WebDriverWait(self.browser, timeout, 1, (TimeoutException,)).until_not(
+                EC.presence_of_element_located((how, what))
+            )
+        except TimeoutException:
+            return False
+
+        return True
+
     def solve_quiz_and_get_code(self):
         alert = self.browser.switch_to.alert
         x = alert.text.split(" ")[2]
@@ -33,3 +61,11 @@ class BasePage:
             alert.accept()
         except NoAlertPresentException:
             print("No second alert presented")
+
+    def go_to_login_page(self):
+        self.browser.find_element(*BasePageLocators.LOGIN_LINK).click()
+
+    def should_be_login_link(self):
+        assert self.is_element_present(*BasePageLocators.LOGIN_LINK), (
+            "Login link is not presented"
+        )
